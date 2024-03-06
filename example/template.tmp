@@ -1,0 +1,11 @@
+[[[i = 10]]]
+#include <iostream>
+
+int main() {
+    std::cout << [[[for i = 1,10 do
+                        print("Hello, World!"..i)
+                    end]]] << std::endl;
+    std::cout << [[[i = i + 10
+                    print("Hello, again, World!"..i)]]]  << std::endl;
+    return 0;
+}
