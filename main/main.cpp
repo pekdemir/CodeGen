@@ -2,6 +2,7 @@
 #include <stdlib.h>                             /* For function exit() */
 #include <iostream>
 #include "template_file_parser.h"
+#include "../cmdparser/cmdparser.hpp"
 
 extern std::vector<std::string> gLuaPrints;
 
@@ -37,20 +38,29 @@ extern int luaopen_luamylib(lua_State *L)
   return 0;
 }
 
+void configure_parser(cli::Parser& parser) {
+    parser.set_required<std::string>("t", "template", "Template file to be replaced.");
+    parser.set_required<std::string>("d", "data", "Data JSON file that includes data.");
+}
+
+void parse_and_exit(cli::Parser& parser) {
+    if (parser.run(std::cout, std::cout) == false) {
+        exit(1);
+    }
+}
+
 
 int main(int argc, char *argv[]) {
 
-    if (argc != 3) {
-        printf("Usage: %s <templateFile> <inputJsonFile>\n", argv[0]);
-        return 1;
-    }
+    cli::Parser parser(argc, argv);
+    configure_parser(parser);
+    parser.run_and_exit_if_error();
 
-    char *templateFile = argv[1];
-    printf("templateFile: %s\n", templateFile);
+    std::string templateFile = parser.get<std::string>("t");
+    std::cout << "templateFile: " <<  templateFile << "\n";
 
-    char *inputJsonFile = argv[2];
-    printf("inputJsonFile: %s\n", inputJsonFile);
-
+    std::string inputJsonFile = parser.get<std::string>("d");
+    std::cout << "inputJsonFile: " <<  inputJsonFile << "\n";
 
     lua_State *L;
 
